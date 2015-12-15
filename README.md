@@ -30,4 +30,8 @@ Please provide some feedback with the errors you get or suggestions you have.
 
 * Visit chrome://extensions
 * Enable the **Developer Mode**
-* No follow the **How to use** procedure but before step 3, **Right click** the extension's icon and click **Inspect Popup**. Then open the **Console** tab in order to see any error message or logging message.
+* Open the **Console** from Chrome's developer tools
+    * **Right click** the extension's icon
+    * Click **Inspect Popup**
+    * Open the **Console** tab in order to see any error message or logging message
+* Follow the **How to use** procedure again
