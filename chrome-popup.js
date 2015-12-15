@@ -3,7 +3,12 @@
  */
 document.addEventListener('DOMContentLoaded', function() {
   var btnImport = document.querySelector('#btnImport');
-  
+  var btnAuthorize = document.querySelector('#btnAuthorize');
+
+  btnAuthorize.addEventListener('click', function(event) {
+    checkAuthClick(event);
+  }, false);
+
   btnImport.addEventListener('click', function() {
     var label = document.querySelector('#txtLabel').value;
     chrome.tabs.getSelected(null, tabSelectedCallbackWrapper(label));

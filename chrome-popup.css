@@ -14,12 +14,23 @@ h1 {
 	font-size: 150%;
 }
 
-.form {
+.elem-remove {
+	display: none;
+}
+
+.elem-block {
+	display: block;
+}
+
+#authorize-div {
+}
+
+#form-div {
 	width: 320px;
 	position: relative;
 }
 
-.form input {
+#form-div input {
 	display: block;
 	padding: 10px;
 	margin-bottom: 10px;
@@ -27,7 +38,7 @@ h1 {
 	font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
-.form button {
+#form-div button {
 	cursor: pointer;
 	padding: 10px;
 	background-color: #920000;
@@ -37,6 +48,6 @@ h1 {
 	outline: none;
 }
 
-.form button:hover {
+#form-div button:hover {
 	opacity: 0.7;
 }

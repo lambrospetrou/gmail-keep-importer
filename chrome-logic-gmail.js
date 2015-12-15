@@ -51,6 +51,20 @@ function checkAuth() {
       'immediate': true
     }, handleAuthResult);
 }
+/**
+ * Initiate auth flow in response to user clicking authorize button.
+ *
+ * @param {Event} event Button click event.
+ */
+function checkAuthClick(event) {
+  gapi.auth.authorize({
+    'client_id': CLIENT_ID, 
+    'scope': SCOPES.join(' '), 
+    'immediate': false
+  },
+  handleAuthResult);
+  return false;
+}
 
 /**
  * Handle response from authorization server.
@@ -59,9 +73,14 @@ function checkAuth() {
  */
 function handleAuthResult(authResult) {
   if (authResult && !authResult.error) {
+    document.querySelector('#authorize-div').classList.add('elem-remove');
+    document.querySelector('#form-div').classList.add('elem-block');
+
     loadGmailApi();
   } else {
     console.error(authResult);
+    document.querySelector('#authorize-div').classList.add('elem-block');
+    document.querySelector('#form-div').classList.add('elem-remove');
   }
 }
 
@@ -72,6 +91,11 @@ function handleAuthResult(authResult) {
 function loadGmailApi() {
   gapi.client.load('gmail', 'v1', function() {
     // gmail api loaded - do stuff now.
+    if (!gapi.client.gmail || !gapi.client.gmail.users) {
+      console.error('GMAIL API DID NOT LOAD!!!');
+      alert('GMAIL API COULD NOT LOAD!!!');
+      return;
+    }
     console.info('GMAIL API LOADED...');
   });
 }

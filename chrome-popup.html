@@ -12,7 +12,14 @@
   </head>
   <body>
       <h1>LP Gmail-Keep Importer</h1>
-      <div class="form">
+
+      <div id="authorize-div" class="elem-remove">
+        <span>Authorize access to Gmail API</span>
+        <!--Button for the user to click to initiate auth sequence -->
+        <button id="btnAuthorize">Authorize</button>
+      </div>
+
+      <div id="form-div" class="elem-remove">
           <input type="text" id="txtLabel" placeholder="Gmail label name" autofocus="autofocus">
           <button id="btnImport">Import</button>
       </div>
