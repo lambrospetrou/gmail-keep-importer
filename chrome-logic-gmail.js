@@ -3,7 +3,6 @@
 
 // Your Client ID can be retrieved from your project in the Google
 // Developer Console, https://console.developers.google.com
-//var CLIENT_ID = '242163669253-6bn5d979ub7sbvohgemfe46soihad193.apps.googleusercontent.com'; // JS
 //var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
 var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
                  
@@ -14,34 +13,9 @@ var LPMail = {
   cbFn: null
 };
 
-
-function injectGoogleAPIScript() {
-  /*
-  var po = document.createElement('script'); po.type = 'text/javascript'; 
-  document.body.appendChild(po);
-  //var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  po.onload = importGMailLabel;
-  po.src = 'https://apis.google.com/js/client.js';
-  */
-  /*
-  var script = document.createElement("script");
-  document.body.appendChild(script);
-  script.setAttribute("src", "https://apis.google.com/js/client.js?onload=importGMailLabel");
-  
-
-  function callbackFn() {
-    console.log('IMPORTED GMAIL');
-  }
-  var head = document.getElementsByTagName('head')[0];
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = "https://apis.google.com/js/client.js?cb=callbackFn";
-  head.appendChild(script);
-  */
-}
-
 /**
  * Check if current user has authorized this application.
+ * Called automatically by the script when it is loaded from the <script> tags.
  */
 function checkAuth() {
   gapi.auth.authorize(
@@ -51,9 +25,11 @@ function checkAuth() {
       'immediate': true
     }, handleAuthResult);
 }
+
 /**
  * Initiate auth flow in response to user clicking authorize button.
- *
+ * Called when the user clicks the button to Authorize the plugin.
+
  * @param {Event} event Button click event.
  */
 function checkAuthClick(event) {
@@ -72,6 +48,7 @@ function checkAuthClick(event) {
  * @param {Object} authResult Authorization result.
  */
 function handleAuthResult(authResult) {
+  console.log('authenticated');
   if (authResult && !authResult.error) {
     document.querySelector('#authorize-div').classList.add('elem-remove');
     document.querySelector('#form-div').classList.add('elem-block');
@@ -109,12 +86,26 @@ function importGMailLabel(label, cbFn) {
   listMessagesWrapper();
 }
 
-// Final callback with the final messages
+// Final callback with the final messages.
+// Will call the callback with all the messages from Gmail that have content 
+// and are of the specified label.
 function handleLabelMessages(messages) {
   console.log('Decorating finished!');
   console.log(messages);
   // send the messages to the content-script.
   LPMail.cbFn(messages.filter(function(msg) { return !!msg.decodedPayload; }));
+}
+
+/**
+ * Starts the fetching of the messages from GMail.
+ */
+function listMessagesWrapper() {
+    listMessages('me', LPMail.label, function(messages) {
+        //console.log(messages);
+        console.log('Received messages from label: ', LPMail.label);
+        console.log('Decorating the messages...', messages.length);
+        decorateMessages('me', messages, handleLabelMessages);
+    });
 }
 
 /**
@@ -150,15 +141,10 @@ function listMessages(userId, query, callback) {
   getPageOfMessages(initialRequest, []);
 }
 
-function listMessagesWrapper() {
-    listMessages('me', LPMail.label, function(messages) {
-        //console.log(messages);
-        console.log('Received messages from label: ', LPMail.label);
-        console.log('Decorating the messages...', messages.length);
-        decorateMessages('me', messages, handleLabelMessages);
-    });
-}
-
+/*
+ * Queries the GMail API for the full content of each message given.
+ * It adds to the final messages the Base64 decoded body message.
+ */
 function decorateMessages(userId, messages, callback) {
     console.log(messages);
     if (!messages || messages.length === 0) { console.log("No messages"); callback([]); return; }

@@ -7,9 +7,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         "from the extension");
     if (request.action == "import.mail.label") {
     	//sendResponse({dom: document.all[0].outerHTML});
-    	importMessagesIntoKeep(document, request.label, request.messages);
-    	//console.log('Content-Script:: Msg received: ' + JSON.stringify(request.action));
-    	sendResponse('Finished importing ' + String(request.messages.length) + ' messages.');
+    	try {
+    		importMessagesIntoKeep(document, request.label, request.messages);	
+    		//console.log('Content-Script:: Msg received: ' + JSON.stringify(request.action));
+    		sendResponse('Finished importing ' + String(request.messages.length) + ' messages.');
+    	} catch (e) {
+    		sendResponse('Error while importing ' + String(e));
+    	}
     }
 });
 
