@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var btnAuthorize = document.querySelector('#btnAuthorize');
 
   btnAuthorize.addEventListener('click', function(event) {
-    checkAuthClick(event);
+    LPMail.checkAuthClick(onAuthSuccess, onAuthError);
+    return false;
   }, false);
 
   btnImport.addEventListener('click', function() {
@@ -18,6 +19,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /*************************************/
 
+function onAuthSuccess() {
+  document.querySelector('#authorize-div').classList.add('elem-remove');
+  document.querySelector('#form-div').classList.add('elem-block');
+}
+
+function onAuthError(authError, noAlert) {
+  console.error(authError);
+  if (noAlert !== false) {
+    alert('Authentication failed...' + String(authError));
+  }
+  document.querySelector('#authorize-div').classList.add('elem-block');
+  document.querySelector('#form-div').classList.add('elem-remove');
+}
+
+function onGogleClientLoaded() {
+  LPMail.checkAuthSilent(onAuthSuccess, function(authError) { onAuthError(authError, false) });
+}
+
 function tabSelectedCallbackWrapper(label) {
   return function(tab) {
     importClickCallback(tab, label);
@@ -27,7 +46,7 @@ function tabSelectedCallbackWrapper(label) {
 function importClickCallback(tab, label) {
   console.log('Ready to start importing messages from label: ', label);
 
-  importGMailLabel(label, function(messages) {
+  LPMail.importGMailLabel(label, function(messages) {
 
     if (!messages || messages.length === 0) {
       alert('No messages can be imported for label: ' + label);
@@ -35,18 +54,26 @@ function importClickCallback(tab, label) {
     }
 
     if (!window.confirm("Total messages to import " + String(messages.length) + '. Continue ?')) { 
-      console.info('Importing aborted!!!');
+      console.info('Importing aborted!');
       return;
     }
 
     // send the action to the content-script
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      console.info(':: Starting importing of messages into Keep...');
+
       chrome.tabs.sendMessage(tabs[0].id, {action: "import.mail.label", label: label, messages: messages}, function(response) {
+        console.info(':: Finished importing of messages into Keep.');
         console.log(response);
 
         alert(response);
       });
     }); // message action to content-script
+  }, 
+
+  function(errorMsg) {
+    console.error(errorMsg);
+    alert('There was a problem while fetching your emails...' + String(error));
   });
 
 }

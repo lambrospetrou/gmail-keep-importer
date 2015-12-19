@@ -2,19 +2,21 @@
  * MAKE THE COMMUNICATION WITH THE CONTENT SCRIPT TO GET DOM.
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	console.log(sender.tab ?
-		"from a content script:" + sender.tab.url :
-        "from the extension");
+
     if (request.action == "import.mail.label") {
+    	console.info('Content-Script received request for import task to Keep...');
+    	//console.log('Content-Script:: Msg received: ' + JSON.stringify(request.action));
+
     	//sendResponse({dom: document.all[0].outerHTML});
     	try {
     		importMessagesIntoKeep(document, request.label, request.messages);	
-    		//console.log('Content-Script:: Msg received: ' + JSON.stringify(request.action));
+    		
     		sendResponse('Finished importing ' + String(request.messages.length) + ' messages.');
     	} catch (e) {
     		sendResponse('Error while importing ' + String(e));
     	}
     }
+
 });
 
 /*************************************/
@@ -24,7 +26,7 @@ function importMessagesIntoKeep(pageDom, label, messages) {
 
   	messages.forEach(function(message, index, array) {
   		if (!message.decodedPayload) { return; }
-  		//console.info('message ', index, message.decodedPayload);
+  		console.info('message ', index, message.decodedPayload);
   		createKeepNote(message.decodedPayload);
   	});
 

@@ -5,10 +5,10 @@
     <link rel="stylesheet" type="text/css" href="chrome-popup.css">
 
     <script src="chrome-base64.js"></script>
+    <script src="chrome-logic-gmail.js"></script>
     <script src="chrome-popup.js"></script>
 
-    <script src="chrome-logic-gmail.js"></script>
-    <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+    <script src="https://apis.google.com/js/client.js?onload=onGogleClientLoaded"></script>
   </head>
   <body>
       <h1>LP Gmail-Keep Importer</h1>
@@ -17,6 +17,7 @@
         <span>Authorize access to Gmail API</span>
         <!--Button for the user to click to initiate auth sequence -->
         <button id="btnAuthorize">Authorize</button>
+        <p><strong>Note</strong>: You will have to manually close the authorization window (Google has a known problem) when it says <strong>Connecting</strong> on the title bar and then refresh the page (or close and re-open the extension).</p>
       </div>
 
       <div id="form-div" class="elem-remove">

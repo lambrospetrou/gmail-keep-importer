@@ -8,6 +8,7 @@ body {
 	font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 	color: #232323;
 	padding: 15px;
+	width: 400px;
 }
 
 h1 {
@@ -26,7 +27,7 @@ h1 {
 }
 
 #form-div {
-	width: 320px;
+	width: 90%;
 	position: relative;
 }
 
