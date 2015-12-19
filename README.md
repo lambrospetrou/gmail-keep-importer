@@ -12,9 +12,12 @@ Easily imports your Gmail messages into Google Keep. Can also be used to transfe
 
 1. First install the plugin from Chrome extension store: https://chrome.google.com/webstore/detail/lp-gmail-keep-importer/ingomolknmgnfbafknpkmklapabaednn
 2. Now visit the Google Keep website and log in.
-3. Click the **Aries** icon on your Chrome extension bar to open the small popup of this extension where you can type the label you want to import from Gmail.
-4. Click **Import** and then *Confirm* that you want to import the messages.
-5. Done ;)
+3. Click the **Aries** icon on your Chrome extension bar to open the small popup of this extension 
+4. The first time you will use the extension you have to authorize it to access your emails (**READONLY** don't worry). By clicking **Authorize** you will be redirected to Google's authorization page. Then when you **Allow** the extension to use your account's email, the window will stay open with a blank page. This behavior is a bug from Google's side and they are looking into a fix, but for now just close the window yourself and refresh the page.
+5. Now you should be able to use the extension without any authorization pages.
+6. Open the extension and type the label you want to import from Gmail.
+7. Click **Import** and then *Confirm* that you want to import the messages.
+8. Done ;)
 
 ## Todos - Future work
 
