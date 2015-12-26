@@ -150,7 +150,11 @@ function decorateMessages(userId, messages, callback) {
       request.execute(function(resp) {
         result[i].email = resp;
         if (resp.payload.parts && (resp.payload.parts.length > 0)) {
+          if (resp.payload.parts[0].parts) {
+            result[i].decodedPayload = B64.decode(resp.payload.parts[0].parts[0].body.data);
+          } else {
             result[i].decodedPayload = B64.decode(resp.payload.parts[0].body.data);
+          }
         } else if (resp.payload.body.size > 0) {
             //console.log(resp.payload.body.data);
             //result[i].decodedPayload = atob(resp.payload.body.data);
