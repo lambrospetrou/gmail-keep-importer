@@ -26,8 +26,8 @@ var LPMail = {
 
 // Your Client ID can be retrieved from your project in the Google
 // Developer Console, https://console.developers.google.com
-var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
-//var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
+//var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
+var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
 
 /**
@@ -149,16 +149,10 @@ function decorateMessages(userId, messages, callback) {
     var getMessage = function(request, result) {
       request.execute(function(resp) {
         result[i].email = resp;
-        if (resp.payload.parts && (resp.payload.parts.length > 0)) {
-          if (resp.payload.parts[0].parts) {
-            result[i].decodedPayload = B64.decode(resp.payload.parts[0].parts[0].body.data);
-          } else {
-            result[i].decodedPayload = B64.decode(resp.payload.parts[0].body.data);
-          }
-        } else if (resp.payload.body.size > 0) {
-            //console.log(resp.payload.body.data);
-            //result[i].decodedPayload = atob(resp.payload.body.data);
-            result[i].decodedPayload = B64.decode(resp.payload.body.data);
+        var part = extractBodyPayload(resp);
+        console.log(part);
+        if (!!part) {
+          result[i].decodedPayload = B64.decode(part);
         }
         i += 1;
         var finished = i === totalMessages;
@@ -182,6 +176,32 @@ function decorateMessages(userId, messages, callback) {
         'format': 'full'
     });
     getMessage(initialRequest, messages);
+}
+
+function extractBodyPayload(email) {
+  var plainTextPart = null;
+  // check if multipart response
+  if (email.payload.mimeType.toLowerCase() === 'multipart/alternative') {
+    plainTextPart = filterPlainTextPart(email.payload.parts)[0].body.data;
+  } else if (email.payload.mimeType.toLowerCase() === 'multipart/mixed') {
+    plainTextPart = filterPlainTextPart(filterAlternativePart(email.payload.parts)[0].parts)[0].body.data;
+  } else if (email.payload.body.size > 0) {
+    // no multipart message
+    plainTextPart = email.payload.body.data;
+  }
+  return plainTextPart;
+}
+
+function filterAlternativePart(parts) {
+  return parts.filter(function(part) {
+    return part.mimeType === 'multipart/alternative';
+  });
+}
+
+function filterPlainTextPart(parts) {
+  return parts.filter(function(part) {
+    return part.mimeType === 'text/plain';
+  });
 }
 
 this.LPMail = LPMail;
