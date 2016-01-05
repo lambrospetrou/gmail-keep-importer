@@ -152,7 +152,8 @@ function decorateMessages(userId, messages, callback) {
         var part = extractBodyPayload(resp);
         console.log(part);
         if (!!part) {
-          result[i].decodedPayload = B64.decode(part);
+          //result[i].decodedPayload = B64.decode(part);
+          result[i].decodedPayload = part;
         }
         i += 1;
         var finished = i === totalMessages;
@@ -185,11 +186,20 @@ function extractBodyPayload(email) {
     plainTextPart = filterPlainTextPart(email.payload.parts)[0].body.data;
   } else if (email.payload.mimeType.toLowerCase() === 'multipart/mixed') {
     plainTextPart = filterPlainTextPart(filterAlternativePart(email.payload.parts)[0].parts)[0].body.data;
+  } else if (email.payload.mimeType.toLowerCase() === 'text/html') {
+    plainTextPart = convertHtmlToText(email.payload.body.data);
+    return plainTextPart;
   } else if (email.payload.body.size > 0) {
     // no multipart message
     plainTextPart = email.payload.body.data;
   }
-  return plainTextPart;
+  return B64.decode(plainTextPart);
+}
+
+function convertHtmlToText(htmlText) {
+  var div = document.createElement('div');
+  div.innerHTML = htmlText || '';
+  return div.textContent;
 }
 
 function filterAlternativePart(parts) {
