@@ -3,31 +3,31 @@
 
 (function() {
 
-var LPMail = {
+    var LPMail = {
 
-  checkAuthSilent: prepareAuthWithCallbacks(true),
-  checkAuthClick: prepareAuthWithCallbacks(false),
+        checkAuthSilent: prepareAuthWithCallbacks(true),
+checkAuthClick: prepareAuthWithCallbacks(false),
 
-  /**
-   * Initiate message fetching.
-   */
-  importGMailLabel: function(label, cbFn, cbErrorFn) {
+/**
+ * Initiate message fetching.
+ */
+importGMailLabel: function(label, cbFn, cbErrorFn) {
     console.info(':: Starting importing messages for label: ', label);
     try {
-      listMessagesWrapper(label, cbFn);
+        listMessagesWrapper(label, cbFn);
     } catch(e) {
-      cbErrorFn(e);
+        cbErrorFn(e);
     } finally {
-      console.info(':: Finished importing messages for label: ', label);
+        console.info(':: Finished importing messages for label: ', label);
     }
-  }
+}
 
 };
 
 // Your Client ID can be retrieved from your project in the Google
 // Developer Console, https://console.developers.google.com
-var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
-//var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
+//var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
+var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
 
 /**
@@ -35,13 +35,13 @@ var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
  * Called when the user clicks the button to Authorize the plugin and when the Google client is loaded.
  */
 function prepareAuthWithCallbacks(immediate) {
-  return function(cbFn, cbErrorFn) {
-    gapi.auth.authorize({
-      'client_id': CLIENT_ID,
-      'scope': SCOPES,
-      'immediate': immediate
-    }, prepareAuthHandlerWithCallbacks(cbFn, cbErrorFn));
-  };
+    return function(cbFn, cbErrorFn) {
+        gapi.auth.authorize({
+            'client_id': CLIENT_ID,
+            'scope': SCOPES,
+            'immediate': immediate
+        }, prepareAuthHandlerWithCallbacks(cbFn, cbErrorFn));
+    };
 }
 
 /**
@@ -50,16 +50,16 @@ function prepareAuthWithCallbacks(immediate) {
  * @param {Object} authResult Authorization result.
  */
 function prepareAuthHandlerWithCallbacks(cbFn, cbErrorFn) {
-  return function(authResult) {
-    if (authResult && !authResult.error) {
-      console.info('User authenticated! Preparing to load Gmail API...');
-      loadGmailApi(cbFn, cbErrorFn);
-    } else {
-      console.error('User authenticated! Preparing to load Gmail API...');
-      console.error(authResult);
-      cbErrorFn(authResult.error);
-    }
-  };
+    return function(authResult) {
+        if (authResult && !authResult.error) {
+            console.info('User authenticated! Preparing to load Gmail API...');
+            loadGmailApi(cbFn, cbErrorFn);
+        } else {
+            console.error('User authenticated! Preparing to load Gmail API...');
+            console.error(authResult);
+            cbErrorFn(authResult.error);
+        }
+    };
 }
 
 /**
@@ -67,28 +67,28 @@ function prepareAuthHandlerWithCallbacks(cbFn, cbErrorFn) {
  * is loaded.
  */
 function loadGmailApi(cbFn, cbErrorFn) {
-  gapi.client.load('gmail', 'v1', function() {
-    // gmail api loaded - do stuff now.
-    if (!gapi.client.gmail || !gapi.client.gmail.users) {
-      console.error('GMAIL API DID NOT LOAD!!!');
-      cbErrorFn('Gmail API DID NOT load!!!');
-      return;
-    }
-    console.info('Gmail API loaded!');
-    cbFn('Gmail API loaded!');
-  });
+    gapi.client.load('gmail', 'v1', function() {
+        // gmail api loaded - do stuff now.
+        if (!gapi.client.gmail || !gapi.client.gmail.users) {
+            console.error('GMAIL API DID NOT LOAD!!!');
+            cbErrorFn('Gmail API DID NOT load!!!');
+            return;
+        }
+        console.info('Gmail API loaded!');
+        cbFn('Gmail API loaded!');
+    });
 }
 
 // Final callback with the final messages.
 // Will call the callback with all the messages from Gmail that have content 
 // and are of the specified label.
 function buildDecoratedMessagesHandler(cbFn) {
-  return function handleLabelMessages(messages) {
-    console.log('Decorating finished!');
-    console.log(messages);
-    // send the messages to the content-script.
-    cbFn(messages.filter(function(msg) { return !!msg.decodedPayload; }));
-  };
+    return function handleLabelMessages(messages) {
+        console.log('Decorating finished!');
+        console.log(messages);
+        // send the messages to the content-script.
+        cbFn(messages.filter(function(msg) { return !!msg.decodedPayload; }));
+    };
 }
 
 /**
@@ -112,28 +112,28 @@ function listMessagesWrapper(label, cbFn) {
  * @param  {Function} callback Function to call when the request is complete.
  */
 function listMessages(userId, query, callback) {
-  var getPageOfMessages = function(request, result) {
-    request.execute(function(resp) {
-      if (!resp.messages || resp.messages.length === 0) { callback(result); return; }
-      result = result.concat(resp.messages);
-      var nextPageToken = resp.nextPageToken;
-      if (nextPageToken) {
-        request = gapi.client.gmail.users.messages.list({
-          'userId': userId,
-          'pageToken': nextPageToken,
-          'q': 'label:' + query
+    var getPageOfMessages = function(request, result) {
+        request.execute(function(resp) {
+            if (!resp.messages || resp.messages.length === 0) { callback(result); return; }
+            result = result.concat(resp.messages);
+            var nextPageToken = resp.nextPageToken;
+            if (nextPageToken) {
+                request = gapi.client.gmail.users.messages.list({
+                    'userId': userId,
+                    'pageToken': nextPageToken,
+                    'q': 'label:' + query
+                });
+                getPageOfMessages(request, result);
+            } else {
+                callback(result); return;
+            }
         });
-        getPageOfMessages(request, result);
-      } else {
-        callback(result); return;
-      }
+    };
+    var initialRequest = gapi.client.gmail.users.messages.list({
+        'userId': userId,
+        'q': 'label:' + query
     });
-  };
-  var initialRequest = gapi.client.gmail.users.messages.list({
-    'userId': userId,
-    'q': 'label:' + query
-  });
-  getPageOfMessages(initialRequest, []);
+    getPageOfMessages(initialRequest, []);
 }
 
 /*
@@ -147,29 +147,29 @@ function decorateMessages(userId, messages, callback) {
     var totalMessages = messages.length;
 
     var getMessage = function(request, result) {
-      request.execute(function(resp) {
-        result[i].email = resp;
-        var part = extractBodyPayload(resp);
-        console.log(part);
-        if (!!part) {
-          //result[i].decodedPayload = B64.decode(part);
-          result[i].decodedPayload = part;
-        }
-        i += 1;
-        var finished = i === totalMessages;
-        if (!finished) {
-          var currentMessage = result[i];
-          request = gapi.client.gmail.users.messages.get({
-              'userId': userId,
-              'id': currentMessage.id,
-              'format': 'full'
-          });
+        request.execute(function(resp) {
+            result[i].email = resp;
+            var part = extractBodyPayload(resp);
+            console.log(part);
+            if (!!part) {
+                //result[i].decodedPayload = B64.decode(part);
+                result[i].decodedPayload = part;
+            }
+            i += 1;
+            var finished = i === totalMessages;
+            if (!finished) {
+                var currentMessage = result[i];
+                request = gapi.client.gmail.users.messages.get({
+                    'userId': userId,
+                        'id': currentMessage.id,
+                        'format': 'full'
+                });
 
-          getMessage(request, result);
-        } else {
-          callback(result);
-        }
-      });
+                getMessage(request, result);
+            } else {
+                callback(result);
+            }
+        });
     };
     var initialRequest = gapi.client.gmail.users.messages.get({
         'userId': userId,
@@ -180,38 +180,39 @@ function decorateMessages(userId, messages, callback) {
 }
 
 function extractBodyPayload(email) {
-  var plainTextPart = null;
-  // check if multipart response
-  if (email.payload.mimeType.toLowerCase() === 'multipart/alternative') {
-    plainTextPart = filterPlainTextPart(email.payload.parts)[0].body.data;
-  } else if (email.payload.mimeType.toLowerCase() === 'multipart/mixed') {
-    plainTextPart = filterPlainTextPart(filterAlternativePart(email.payload.parts)[0].parts)[0].body.data;
-  } else if (email.payload.mimeType.toLowerCase() === 'text/html') {
-    plainTextPart = convertHtmlToText(email.payload.body.data);
-    return plainTextPart;
-  } else if (email.payload.body.size > 0) {
-    // no multipart message
-    plainTextPart = email.payload.body.data;
-  }
-  return B64.decode(plainTextPart);
+    var plainTextPart = null;
+    // check if multipart response
+    if (email.payload.mimeType.toLowerCase() === 'multipart/alternative') {
+        plainTextPart = filterPlainTextPart(email.payload.parts)[0].body.data;
+    } else if (email.payload.mimeType.toLowerCase() === 'multipart/mixed') {
+        plainTextPart = filterPlainTextPart(filterAlternativePart(email.payload.parts)[0].parts)[0].body.data;
+    } else if (email.payload.mimeType.toLowerCase() === 'text/html') {
+        plainTextPart = convertHtmlToText(email.payload.body.data);
+        return plainTextPart;
+    } else if (email.payload.body.size > 0) {
+        // no multipart message
+        plainTextPart = email.payload.body.data;
+    }
+    return B64.decode(plainTextPart);
 }
 
-function convertHtmlToText(htmlText) {
-  var div = document.createElement('div');
-  div.innerHTML = htmlText || '';
-  return div.textContent;
+function convertHtmlToText(htmlText64) {
+    if (!htmlText64) { return ''; }
+    var div = document.createElement('div');
+    div.innerHTML = B64.decode(htmlText64) || '';
+    return div.innerText;
 }
 
 function filterAlternativePart(parts) {
-  return parts.filter(function(part) {
-    return part.mimeType === 'multipart/alternative';
-  });
+    return parts.filter(function(part) {
+        return part.mimeType === 'multipart/alternative';
+    });
 }
 
 function filterPlainTextPart(parts) {
-  return parts.filter(function(part) {
-    return part.mimeType === 'text/plain';
-  });
+    return parts.filter(function(part) {
+        return part.mimeType === 'text/plain';
+    });
 }
 
 this.LPMail = LPMail;

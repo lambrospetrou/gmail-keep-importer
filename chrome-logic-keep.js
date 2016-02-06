@@ -3,6 +3,7 @@
 var LP = {
     keepElemTextPlaceholder: '.IZ65Hb-YPqjbf.h1U9Be-YPqjbf',
     keepElemDone: '.IZ65Hb-iib5kc',
+    keepElemTitle: '.IZ65Hb-YPqjbf.r4nke-YPqjbf',
 
     dom: null
 };
@@ -18,12 +19,48 @@ function openNewNote() {
 }
 
 function addText(txt) {
-    var text = LP.dom.createTextNode(txt);
+    if (!txt || txt === '') {
+        return;
+    }
+    var title = extractFirstLine(txt);
+    var content = txt.substring(title.length).trim();
+
+    var titleArea = LP.dom.querySelector(LP.keepElemTitle).nextSibling;
+    var textTitle = LP.dom.createTextNode(title);
+    titleArea.appendChild(textTitle);
+    fireEvent(titleArea, 'change');
+    fireEvent(titleArea, 'mousedown');
+    fireEvent(titleArea, 'mouseup');
+
     var contentArea = LP.dom.querySelector(LP.keepElemTextPlaceholder).nextSibling;
-    contentArea.appendChild(text);
+    var textContent = LP.dom.createTextNode(content);
+    contentArea.appendChild(textContent);
     fireEvent(contentArea, 'change');
-    fireEvent(LP.dom.querySelector(LP.keepElemTextPlaceholder).nextSibling, 'mousedown');
-    fireEvent(LP.dom.querySelector(LP.keepElemTextPlaceholder).nextSibling, 'mouseup');
+    fireEvent(contentArea, 'mousedown');
+    fireEvent(contentArea, 'mouseup');
+    /*
+       var text = LP.dom.createTextNode(txt);
+       var contentArea = LP.dom.querySelector(LP.keepElemTextPlaceholder).nextSibling;
+       contentArea.appendChild(text);
+       fireEvent(contentArea, 'change');
+       fireEvent(LP.dom.querySelector(LP.keepElemTextPlaceholder).nextSibling, 'mousedown');
+       fireEvent(LP.dom.querySelector(LP.keepElemTextPlaceholder).nextSibling, 'mouseup');
+     */
+}
+
+/**
+  * Return the first line of the given text (from start till the first occurence of \n or the end of the string).
+  * If empty string then return empty string.
+  */
+function extractFirstLine(txt) {
+    if (!txt || txt === '') {
+        return '';
+    }
+    var newLinePos = txt.indexOf('\n');
+    if (newLinePos === -1) {
+        return txt;
+    }
+    return txt.substr(0, newLinePos).trim();
 }
 
 function triggerDone() {
@@ -49,7 +86,7 @@ function fireEvent(node, eventName) {
         throw new Error("Invalid node passed to fireEvent: " + node.id);
     }
 
-     if (node.dispatchEvent) {
+    if (node.dispatchEvent) {
         // Gecko-style approach (now the standard) takes more work
         var eventClass = "";
 
