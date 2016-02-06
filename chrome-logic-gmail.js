@@ -27,7 +27,8 @@ importGMailLabel: function(label, cbFn, cbErrorFn) {
 // Your Client ID can be retrieved from your project in the Google
 // Developer Console, https://console.developers.google.com
 //var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
-var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
+//var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
+var CLIENT_ID = '242163669253-vhppkeaedtsk7gvs92ibvh2nrl79f6nk.apps.googleusercontent.com'; // mac dev
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
 
 /**
