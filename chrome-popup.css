@@ -39,7 +39,7 @@ h1 {
 	font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
-#form-div button {
+button {
 	cursor: pointer;
 	padding: 10px;
 	background-color: #920000;
@@ -49,10 +49,7 @@ h1 {
 	outline: none;
 }
 
-#form-div button:hover {
+button:hover {
 	opacity: 0.7;
 }
 
-#dialog-container {
-    position: relative;
-}
