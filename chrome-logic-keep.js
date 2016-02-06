@@ -1,4 +1,5 @@
 /************ KEEP FUNCTIONALITY ***********/
+(function() {
 
 var LP = {
     keepElemTextPlaceholder: '.IZ65Hb-YPqjbf.h1U9Be-YPqjbf',
@@ -126,3 +127,14 @@ function fireEvent(node, eventName) {
         node.fireEvent("on" + eventName, event);
     }
 }
+
+    this.LPKeep = {
+        setDom: function(dom) {
+            LP.dom = dom;
+        },
+
+        createKeepNote: function(txt) {
+            return createKeepNote(txt);
+        }
+    };
+}).call(this);

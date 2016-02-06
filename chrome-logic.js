@@ -22,13 +22,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 /*************************************/
 
 function importMessagesIntoKeep(pageDom, label, messages) {
-  	LP.dom = pageDom;
+  	LPKeep.setDom(pageDom);
 
   	messages.forEach(function(message, index, array) {
   		if (!message.decodedPayload) { return; }
   		console.info('message ', index, message.decodedPayload);
-  		createKeepNote(message.decodedPayload);
+  		LPKeep.createKeepNote(message.decodedPayload);
   	});
-
-  	//createKeepNote('Hello LP plugin');
 }
