@@ -11,7 +11,7 @@
     "default_popup": "chrome-popup.html"
   },
 
-  "permissions": ["*://*.google.com/*", "activeTab"],
+  "permissions": ["*://keep.google.com/*", "activeTab"],
   "content_security_policy": "script-src 'self' https://*.google.com https://ajax.googleapis.com https://code.jquery.com 'unsafe-eval'; object-src 'self'",
 
   "content_scripts": [{
