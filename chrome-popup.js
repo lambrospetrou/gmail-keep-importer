@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, false);
 
     document.querySelector('#dialog-container').classList.add('elem-remove');
+    document.querySelector('#loading-container').classList.add('elem-remove');
 }, false); // end of DOMContentLoaded
 
 /*************************************/
@@ -49,8 +50,11 @@ function importClickCallback(tab, label) {
 
     // Hide the result view
     document.querySelector('#dialog-container').classList.add('elem-remove');
+    document.querySelector('#loading-container').classList.remove('elem-remove');
 
     LPMail.importGMailLabel(label, function(messages) {
+        
+        document.querySelector('#loading-container').classList.add('elem-remove');
         
         // Show the result view
         document.querySelector('#dialog-msg').innerHTML = '';

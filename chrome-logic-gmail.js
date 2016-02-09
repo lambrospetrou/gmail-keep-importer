@@ -26,8 +26,8 @@ importGMailLabel: function(label, cbFn, cbErrorFn) {
 
 // Your Client ID can be retrieved from your project in the Google
 // Developer Console, https://console.developers.google.com
-//var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
-var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
+var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
+//var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
 //var CLIENT_ID = '242163669253-vhppkeaedtsk7gvs92ibvh2nrl79f6nk.apps.googleusercontent.com'; // mac dev
 var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
 
@@ -151,10 +151,9 @@ function decorateMessages(userId, messages, callback) {
         request.execute(function(resp) {
             result[i].email = resp;
             var part = extractBodyPayload(resp);
-            console.log(part);
             if (!!part) {
-                //result[i].decodedPayload = B64.decode(part);
                 result[i].decodedPayload = part;
+                //console.log(part);
             }
             i += 1;
             var finished = i === totalMessages;
@@ -181,20 +180,40 @@ function decorateMessages(userId, messages, callback) {
 }
 
 function extractBodyPayload(email) {
-    var plainTextPart = null;
-    // check if multipart response
-    if (email.payload.mimeType.toLowerCase() === 'multipart/alternative') {
-        plainTextPart = filterPlainTextPart(email.payload.parts)[0].body.data;
-    } else if (email.payload.mimeType.toLowerCase() === 'multipart/mixed') {
-        plainTextPart = filterPlainTextPart(filterAlternativePart(email.payload.parts)[0].parts)[0].body.data;
-    } else if (email.payload.mimeType.toLowerCase() === 'text/html') {
-        plainTextPart = convertHtmlToText(email.payload.body.data);
-        return plainTextPart;
-    } else if (email.payload.body.size > 0) {
-        // no multipart message
-        plainTextPart = email.payload.body.data;
+    payload = extractBodyPayloadMime(email.payload);
+    if (payload && payload.body && payload.body.size && payload.body.size > 0) {
+        if (payload.mimeType.toLowerCase() === "text/plain") {
+            return convertPlainToText(payload.body.data);
+        } else if (payload.mimeType.toLowerCase() === "text/html") {
+            return convertHtmlToText(payload.body.data);
+        }   
     }
-    return B64.decode(plainTextPart);
+    return null;
+}
+
+function extractBodyPayloadMime(payload) {
+    //console.info(payload, mimeType);
+    if ((payload.mimeType.toLowerCase() === "text/html") || (payload.mimeType.toLowerCase() === "text/plain")) {
+        return payload;
+    } else if ((payload.mimeType.toLowerCase().indexOf("multipart") === 0) && payload.parts) {
+        var validParts = payload.parts.map(function(part) {
+            return extractBodyPayloadMime(part);
+        }).filter(function(payload) {
+            return !!payload;
+        });
+        //console.log('Valid parts', validParts);
+        if (validParts && validParts.length > 0) {
+            return validParts[0];
+        } else {
+            return null;
+        }
+    }
+    console.info('Unsupported email response format!', payload);
+    return null;
+}
+
+function convertPlainToText(plainText64) {
+    return B64.decode(plainText64);
 }
 
 function convertHtmlToText(htmlText64) {
@@ -202,18 +221,6 @@ function convertHtmlToText(htmlText64) {
     var div = document.createElement('div');
     div.innerHTML = B64.decode(htmlText64) || '';
     return div.innerText;
-}
-
-function filterAlternativePart(parts) {
-    return parts.filter(function(part) {
-        return part.mimeType === 'multipart/alternative';
-    });
-}
-
-function filterPlainTextPart(parts) {
-    return parts.filter(function(part) {
-        return part.mimeType === 'text/plain';
-    });
 }
 
 this.LPMail = LPMail;
