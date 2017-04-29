@@ -126,7 +126,8 @@ function listMessages(userId, query, callback) {
                 });
                 getPageOfMessages(request, result);
             } else {
-                callback(result); return;
+                var reversed = result.reverse();
+                callback(reversed); return;
             }
         });
     };
