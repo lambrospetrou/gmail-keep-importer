@@ -3,12 +3,7 @@
  */
 document.addEventListener('DOMContentLoaded', function() {
     var btnImport = document.querySelector('#btnImport');
-    var btnAuthorize = document.querySelector('#btnAuthorize');
-
-    btnAuthorize.addEventListener('click', function(event) {
-        LPMail.checkAuthClick(onAuthSuccess, onAuthError);
-        return false;
-    }, false);
+    var btnTryGmail = document.querySelector('#btnTryGmail');
 
     btnImport.addEventListener('click', function() {
         var label = document.querySelector('#txtLabel').value;
@@ -20,24 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false); // end of DOMContentLoaded
 
 /*************************************/
-
-function onAuthSuccess() {
-    document.querySelector('#authorize-div').classList.add('elem-remove');
-    document.querySelector('#form-div').classList.add('elem-block');
-}
-
-function onAuthError(authError, noAlert) {
-    console.error(authError);
-    if (noAlert !== false) {
-        alert('Authentication failed...' + String(authError));
-    }
-    document.querySelector('#authorize-div').classList.add('elem-block');
-    document.querySelector('#form-div').classList.add('elem-remove');
-}
-
-function onGogleClientLoaded() {
-    LPMail.checkAuthSilent(onAuthSuccess, function(authError) { onAuthError(authError, false) });
-}
 
 function tabSelectedCallbackWrapper(label) {
     return function(tab) {
@@ -53,9 +30,9 @@ function importClickCallback(tab, label) {
     document.querySelector('#loading-container').classList.remove('elem-remove');
 
     LPMail.importGMailLabel(label, function(messages) {
-        
+
         document.querySelector('#loading-container').classList.add('elem-remove');
-        
+
         // Show the result view
         document.querySelector('#dialog-msg').innerHTML = '';
         document.querySelector('#btnImportDialog').classList.add('elem-remove');
@@ -65,16 +42,16 @@ function importClickCallback(tab, label) {
             document.querySelector('#dialog-msg').innerHTML = 'No messages can be imported for label: ' + label;
             return;
         }
-        
+
         // Show the Import button and update the message for the to be imported messages
         document.querySelector('#dialog-msg').innerHTML = "Total messages to import " + String(messages.length);
         document.querySelector('#btnImportDialog').classList.remove('elem-remove');
-        document.querySelector('#btnImportDialog').addEventListener('click', function() { 
+        document.querySelector('#btnImportDialog').addEventListener('click', function() {
             // send the action to the content-script
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                 console.info(':: Starting importing of messages into Keep...');
 
-                chrome.tabs.sendMessage(tabs[0].id, {action: "import.mail.label", label: label, messages: messages}, function(response) {
+                chrome.tabs.sendMessage(tabs[0].id, {action: "import.mail.label", label: label, messages: messages}, null, function(response) {
                     console.info(':: Finished importing of messages into Keep.');
                     console.log(response);
 

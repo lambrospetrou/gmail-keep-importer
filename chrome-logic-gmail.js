@@ -1,87 +1,33 @@
-
 /*********************************** GMAIL ***********************************/
+// Your Client ID can be retrieved from your project in the Google
+// Change the manifest.json with the right client id
+// Developer Console, https://console.developers.google.com
+//var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
+//var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
+var CLIENT_ID = '242163669253-vhppkeaedtsk7gvs92ibvh2nrl79f6nk.apps.googleusercontent.com'; // mac dev
+var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
+/////////////////////////////////////////////////////////////////////////////////
 
 (function() {
 
     var LPMail = {
-
-        checkAuthSilent: prepareAuthWithCallbacks(true),
-checkAuthClick: prepareAuthWithCallbacks(false),
-
-/**
- * Initiate message fetching.
- */
-importGMailLabel: function(label, cbFn, cbErrorFn) {
-    console.info(':: Starting importing messages for label: ', label);
-    try {
-        listMessagesWrapper(label, cbFn);
-    } catch(e) {
-        cbErrorFn(e);
-    } finally {
-        console.info(':: Finished importing messages for label: ', label);
-    }
-}
-
-};
-
-// Your Client ID can be retrieved from your project in the Google
-// Developer Console, https://console.developers.google.com
-var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
-//var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
-//var CLIENT_ID = '242163669253-vhppkeaedtsk7gvs92ibvh2nrl79f6nk.apps.googleusercontent.com'; // mac dev
-var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
-
-/**
- * Initiate auth flow in response to user clicking authorize button.
- * Called when the user clicks the button to Authorize the plugin and when the Google client is loaded.
- */
-function prepareAuthWithCallbacks(immediate) {
-    return function(cbFn, cbErrorFn) {
-        gapi.auth.authorize({
-            'client_id': CLIENT_ID,
-            'scope': SCOPES,
-            'immediate': immediate
-        }, prepareAuthHandlerWithCallbacks(cbFn, cbErrorFn));
-    };
-}
-
-/**
- * Handle response from authorization server.
- *
- * @param {Object} authResult Authorization result.
- */
-function prepareAuthHandlerWithCallbacks(cbFn, cbErrorFn) {
-    return function(authResult) {
-        if (authResult && !authResult.error) {
-            console.info('User authenticated! Preparing to load Gmail API...');
-            loadGmailApi(cbFn, cbErrorFn);
-        } else {
-            console.error('User authenticated! Preparing to load Gmail API...');
-            console.error(authResult);
-            cbErrorFn(authResult.error);
+        /**
+         * Initiate message fetching.
+         */
+        importGMailLabel: function(label, cbFn, cbErrorFn) {
+            console.info(':: Starting importing messages for label: ', label);
+            try {
+                listMessagesWrapper(label, cbFn);
+            } catch(e) {
+                cbErrorFn(e);
+            } finally {
+                console.info(':: Finished importing messages for label: ', label);
+            }
         }
     };
-}
-
-/**
- * Load Gmail API client library. List labels once client library
- * is loaded.
- */
-function loadGmailApi(cbFn, cbErrorFn) {
-    gapi.client.load('gmail', 'v1', function() {
-        // gmail api loaded - do stuff now.
-        if (!gapi.client.gmail || !gapi.client.gmail.users) {
-            console.error('GMAIL API DID NOT LOAD!!!');
-            cbErrorFn('Gmail API DID NOT load!!!');
-            return;
-        }
-        console.info('Gmail API loaded!');
-        cbFn('Gmail API loaded!');
-    });
-}
 
 // Final callback with the final messages.
-// Will call the callback with all the messages from Gmail that have content 
+// Will call the callback with all the messages from Gmail that have content
 // and are of the specified label.
 function buildDecoratedMessagesHandler(cbFn) {
     return function handleLabelMessages(messages) {
@@ -113,29 +59,29 @@ function listMessagesWrapper(label, cbFn) {
  * @param  {Function} callback Function to call when the request is complete.
  */
 function listMessages(userId, query, callback) {
-    var getPageOfMessages = function(request, result) {
-        request.execute(function(resp) {
+    function getPageOfMessages(args, result) {
+        fetchMessagesList(function(resp) {
             if (!resp.messages || resp.messages.length === 0) { callback(result); return; }
             result = result.concat(resp.messages);
             var nextPageToken = resp.nextPageToken;
             if (nextPageToken) {
-                request = gapi.client.gmail.users.messages.list({
+                args = {
                     'userId': userId,
                     'pageToken': nextPageToken,
                     'q': 'label:' + query
-                });
-                getPageOfMessages(request, result);
+                };
+                getPageOfMessages(args, result);
             } else {
                 var reversed = result.reverse();
                 callback(reversed); return;
             }
-        });
-    };
-    var initialRequest = gapi.client.gmail.users.messages.list({
+        }, args);
+    }
+    var args = {
         'userId': userId,
         'q': 'label:' + query
-    });
-    getPageOfMessages(initialRequest, []);
+    };
+    getPageOfMessages(args, []);
 }
 
 /*
@@ -148,8 +94,8 @@ function decorateMessages(userId, messages, callback) {
     var i = 0;
     var totalMessages = messages.length;
 
-    var getMessage = function(request, result) {
-        request.execute(function(resp) {
+    var getMessage = function(args, result) {
+        fetchMessage(function(resp) {
             result[i].email = resp;
             var part = extractBodyPayload(resp);
             if (!!part) {
@@ -160,24 +106,24 @@ function decorateMessages(userId, messages, callback) {
             var finished = i === totalMessages;
             if (!finished) {
                 var currentMessage = result[i];
-                request = gapi.client.gmail.users.messages.get({
+                args = {
                     'userId': userId,
-                        'id': currentMessage.id,
-                        'format': 'full'
-                });
+                    'id': currentMessage.id,
+                    'format': 'full'
+                };
 
-                getMessage(request, result);
+                getMessage(args, result);
             } else {
                 callback(result);
             }
-        });
+        }, args);
     };
-    var initialRequest = gapi.client.gmail.users.messages.get({
+    var args = {
         'userId': userId,
         'id': messages[0].id,
         'format': 'full'
-    });
-    getMessage(initialRequest, messages);
+    };
+    getMessage(args, messages);
 }
 
 function extractBodyPayload(email) {
@@ -187,7 +133,7 @@ function extractBodyPayload(email) {
             return convertPlainToText(payload.body.data);
         } else if (payload.mimeType.toLowerCase() === "text/html") {
             return convertHtmlToText(payload.body.data);
-        }   
+        }
     }
     return null;
 }
@@ -222,6 +168,49 @@ function convertHtmlToText(htmlText64) {
     var div = document.createElement('div');
     div.innerHTML = B64.decode(htmlText64) || '';
     return div.innerText;
+}
+
+// https://developer.chrome.com/apps/tut_oauth
+// https://developers.google.com/gmail/api/v1/reference/
+function fetchMessagesList(onSuccess, args) {
+    var qp = Object.keys(args).map(k => `${k}=${encodeURIComponent(args[k])}`).join('&');
+    var userId = args.userId;
+    chrome.identity.getAuthToken({interactive: true}, function(token) {
+        let init = {
+            method: 'GET',
+            async: true,
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            'contentType': 'json'
+        };
+        fetch(
+            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages?key=AIzaSyC02-izGdNpzEBfI4OHfAc6sTIuIst4wXo${qp}`, init)
+            .then(response => response.json())
+            .then(data => onSuccess(data));
+    });
+}
+
+function fetchMessage(onSuccess, args) {
+    var qp = Object.keys(args).map(k => `${k}=${encodeURIComponent(args[k])}`).join('&');
+    var userId = args.userId;
+    var msgId = args.id;
+    chrome.identity.getAuthToken({interactive: true}, function(token) {
+        let init = {
+            method: 'GET',
+            async: true,
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            'contentType': 'json'
+        };
+        fetch(
+            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages/${msgId}?key=AIzaSyC02-izGdNpzEBfI4OHfAc6sTIuIst4wXo${qp}`, init)
+            .then(response => response.json())
+            .then(data => onSuccess(data));
+    });
 }
 
 this.LPMail = LPMail;
