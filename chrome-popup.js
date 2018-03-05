@@ -3,7 +3,6 @@
  */
 document.addEventListener('DOMContentLoaded', function() {
     var btnImport = document.querySelector('#btnImport');
-    var btnTryGmail = document.querySelector('#btnTryGmail');
 
     btnImport.addEventListener('click', function() {
         var label = document.querySelector('#txtLabel').value;
