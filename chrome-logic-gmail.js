@@ -186,7 +186,7 @@ function fetchMessagesList(onSuccess, args) {
             'contentType': 'json'
         };
         fetch(
-            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages?key=<ENTER_YOUR_API_KEY>${qp}`, init)
+            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages?${qp}key=<ENTER_YOUR_API_KEY>`, init)
             .then(response => response.json())
             .then(data => onSuccess(data));
     });
@@ -207,7 +207,7 @@ function fetchMessage(onSuccess, args) {
             'contentType': 'json'
         };
         fetch(
-            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages/${msgId}?key=<ENTER_YOUR_API_KEY>${qp}`, init)
+            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages/${msgId}?${qp}key=<ENTER_YOUR_API_KEY>`, init)
             .then(response => response.json())
             .then(data => onSuccess(data));
     });
