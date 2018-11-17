@@ -2,9 +2,9 @@
 (function() {
 
 var LP = {
-    keepElemTextPlaceholder: '.IZ65Hb-YPqjbf.h1U9Be-YPqjbf',
-    keepElemDone: '.IZ65Hb-iib5kc',
-    keepElemTitle: '.IZ65Hb-YPqjbf.r4nke-YPqjbf',
+    keepElemTextPlaceholder: '.h1U9Be-YPqjbf[role=textbox]',
+    keepElemDone: '.IZ65Hb-iib5kc[role=button]',
+    keepElemTitle: '.IZ65Hb-YPqjbf.r4nke-YPqjbf[role=textbox]',
 
     dom: null
 };
@@ -26,14 +26,14 @@ function addText(txt) {
     var title = extractFirstLine(txt);
     var content = txt.substring(title.length).trim();
 
-    var titleArea = LP.dom.querySelector(LP.keepElemTitle).nextSibling;
+    var titleArea = LP.dom.querySelector(LP.keepElemTitle);
     var textTitle = LP.dom.createTextNode(title);
     titleArea.appendChild(textTitle);
     fireEvent(titleArea, 'change');
     fireEvent(titleArea, 'mousedown');
     fireEvent(titleArea, 'mouseup');
 
-    var contentArea = LP.dom.querySelector(LP.keepElemTextPlaceholder).nextSibling;
+    var contentArea = LP.dom.querySelector(LP.keepElemTextPlaceholder);
     var textContent = LP.dom.createTextNode(content);
     contentArea.appendChild(textContent);
     fireEvent(contentArea, 'change');

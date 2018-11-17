@@ -3,9 +3,10 @@
 // Change the manifest.json with the right client id
 // Developer Console, https://console.developers.google.com
 //var CLIENT_ID = '242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com'; // CHROME STORE
-//var CLIENT_ID = '242163669253-6cjg35vha2ghq2fkre864fb79o8a8n6o.apps.googleusercontent.com'; // CHROME - DEV
-var CLIENT_ID = '242163669253-vhppkeaedtsk7gvs92ibvh2nrl79f6nk.apps.googleusercontent.com'; // mac dev
-var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
+//var CLIENT_ID = '242163669253-vhppkeaedtsk7gvs92ibvh2nrl79f6nk.apps.googleusercontent.com'; // mac dev
+//var CLIENT_ID = '242163669253-ik8dmmtqkh8gskkqaihm8lj3ij2t663e.apps.googleusercontent.com'; // linux dev
+//var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'].join(' ');
+var GMAIL_API_KEY='<PUT_YOUR_API_KEY_HERE>';
 /////////////////////////////////////////////////////////////////////////////////
 
 (function() {
@@ -186,7 +187,7 @@ function fetchMessagesList(onSuccess, args) {
             'contentType': 'json'
         };
         fetch(
-            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages?key=AIzaSyC02-izGdNpzEBfI4OHfAc6sTIuIst4wXo${qp}`, init)
+            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages?key=${GMAIL_API_KEY}${qp}`, init)
             .then(response => response.json())
             .then(data => onSuccess(data));
     });
@@ -207,7 +208,7 @@ function fetchMessage(onSuccess, args) {
             'contentType': 'json'
         };
         fetch(
-            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages/${msgId}?key=AIzaSyC02-izGdNpzEBfI4OHfAc6sTIuIst4wXo${qp}`, init)
+            `https://www.googleapis.com/gmail/v1/users/${encodeURIComponent(userId)}/messages/${msgId}?key=${GMAIL_API_KEY}${qp}`, init)
             .then(response => response.json())
             .then(data => onSuccess(data));
     });

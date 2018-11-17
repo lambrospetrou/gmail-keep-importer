@@ -19,7 +19,7 @@ Easily imports your Gmail messages into Google Keep. Can also be used to transfe
 
 ## Todos - Future work
 
-* Add titles in Google Keep (email subject or 1st line of the message). **Done since v0.10**
+* ~~Add titles in Google Keep (email subject or 1st line of the message).~~ **Done since v0.10**
 * Use the labels of the email as tags in Google Keep.
 * **Most importantly** - Find a way to make it robust against Google's changes on the website.
 
