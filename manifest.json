@@ -1,12 +1,14 @@
 {
   "manifest_version": 2,
 
-  "name": "LP Gmail-Keep Importer",
+  "name": "Gmail-Keep Importer",
   "description": "Allows you to import emails from Gmail into Google Keep as notes. Just type in the Gmail label you want to fetch.",
   "version": "0.14",
 
+  "key": "<ENTER_YOUR_EXTENSION_PUBLIC_KEY>",
+
   "browser_action": {
-    "default_title": "LP Gmail-Keep Importer",
+    "default_title": "Gmail-Keep Importer",
     "default_icon": "icon.png",
     "default_popup": "chrome-popup.html"
   },
@@ -20,7 +22,7 @@
   }],
 
   "oauth2": {
-    "client_id": "242163669253-u4fmahm4dklc3b1l42paf29netvs5to5.apps.googleusercontent.com",
+	"client_id": "<ENTER_YOUR_OAUTH_2_CLIENT_ID>",
     "scopes": [
       "https://www.googleapis.com/auth/gmail.readonly"
     ]

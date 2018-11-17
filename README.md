@@ -10,11 +10,17 @@ Easily imports your Gmail messages into Google Keep. Can also be used to transfe
 
 ## How to use
 
-1. First install the plugin from Chrome extension store: https://chrome.google.com/webstore/detail/lp-gmail-keep-importer/ingomolknmgnfbafknpkmklapabaednn
-2. Now visit the Google Keep website and log in, https://keep.google.com/#home
-3. Click the **LP G2K** icon on your Chrome extension bar to open the small popup of this extension 
-4. Type the label you want to import from Gmail.
-5. Click **Import GMail Label** and then if some email messages are ready to be imported click **Start importing**.
+Full instruction is here: https://developer.chrome.com/apps/tut_oauth
+
+*Long-story short:*
+1. First clone/download this plugin from this repo
+2. Now visit the https://chrome.google.com/webstore/developer/dashboard website 
+3. Package the extension directory into a .zip file and upload it to the Chrome Developer Dashboard without publishing it (save as draft)
+4. Enter your extension **public key** in manifest.json ("key" field)
+5. Now visit the https://developer.chrome.com/apps/tut\_oauth\#oauth_client and read about get **API key** and **OAuth 2.0 Client ID**
+6. Enter Client ID in manifest.json and enter API key in 'chrome-logic-gmail.js' twice
+7. On chrome://extensions page load this extension (before this turn on "Developer Mode")
+6. Click **Import GMail Label** and then if some email messages are ready to be imported click **Start importing**.
 6. Done ;)
 
 ## Todos - Future work
