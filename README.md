@@ -2,6 +2,9 @@
 
 Easily imports your Gmail messages into Google Keep. Can also be used to transfer your Apple Notes, which are stored as emails labelled 'Notes', into Google Keep.
 
+## As of 2021-02-10, this extension does not exist in the Chrome extension store!
+Due to Google changing its policies very often, I stopped updating it and over time it stopped working ([#15](https://github.com/lambrospetrou/gmail-keep-importer/issues/15), [#16](https://github.com/lambrospetrou/gmail-keep-importer/issues/16)). I opened [#20 to add some instructions here](https://github.com/lambrospetrou/gmail-keep-importer/issues/20) how to run it locally on your own Chrome browser, but until then it's up to the reader to find out how to get a Gmail API key, and load the extension `.zip` file locally.
+
 ## Notes
 
 * This is a highly **experimental** Chrome extension.
